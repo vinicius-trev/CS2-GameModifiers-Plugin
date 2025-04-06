@@ -172,7 +172,6 @@ sv_infiniteammo             1
 Client:
 
 noclip					
-
 ```
 
 If this was placed in that folder and the server was either restarted or the user ran the `!reloadmodifiers` command.
