@@ -8,3 +8,6 @@ Packages/
 
 *.csproj
 *.sln
+
+# Allow
+!ThirdParty/Binaries/Premake/premake5.exe

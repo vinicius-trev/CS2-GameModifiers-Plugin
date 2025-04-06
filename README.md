@@ -16,12 +16,6 @@ Inspiration for this came from NadeKings [video](https://www.youtube.com/watch?v
 Never made a plugin/mod for a game before so it's been a fun little side project in the evenings, keep this in 
 mind when reading through the code and if I have done something wrong pull requests would be much appreciated!
 
-<style>
-table {
-    width: 100%;
-}
-</style>
-
 ## 🔧 Modifiers
 
 | Name                | Description                                               | Done |
