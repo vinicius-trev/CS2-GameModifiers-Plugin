@@ -1,4 +1,11 @@
+<div align="center">
+
 # CS2-GameModifiers-Plugin
+
+![GitHub issues](https://img.shields.io/github/issues/Lewisscrivens/CS2-GameModifiers-Plugin)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Lewisscrivens/CS2-GameModifiers-Plugin)
+
+</div>
 
 A plugin I put together across a few days for personal use with some mates.
 Thought I might as-well throw it online in-case anyone else wanted to have a go :)
