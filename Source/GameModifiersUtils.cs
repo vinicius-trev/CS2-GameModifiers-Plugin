@@ -14,7 +14,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 
 using GameModifiers.Modifiers;
-using GameModifiers.Types;
+using GameModifiers.ThirdParty;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace GameModifiers;

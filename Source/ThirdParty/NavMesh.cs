@@ -1,15 +1,15 @@
 ﻿using System;
-using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
-using CounterStrikeSharp.API.Modules.Utils;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
+using CounterStrikeSharp.API.Modules.Utils;
 
-namespace GameModifiers.Types;
+namespace GameModifiers.ThirdParty;
 
 // Thanks to 21Joakim for this class found @ https://gist.github.com/21Joakim/6a264623e4ac8ae217e0eb15fc43e3e5
 

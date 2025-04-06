@@ -1,7 +1,6 @@
 ﻿
 using System.Collections.Generic;
 using System.IO;
-using GameModifiers.Types;
 
 namespace GameModifiers.Modifiers;
 

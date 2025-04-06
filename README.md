@@ -11,10 +11,16 @@
 A plugin I put together across a few days for personal use with some mates.
 Thought I might as-well throw it online in-case anyone else wanted to have a go :)
 
-Inpiration for this came from NadeKings [video](https://www.youtube.com/watch?v=OQQBUFB56Iw&ab_channel=NadeKing)
+Inspiration for this came from NadeKings [video](https://www.youtube.com/watch?v=OQQBUFB56Iw&ab_channel=NadeKing)
 
 Never made a plugin/mod for a game before so it's been a fun little side project in the evenings, keep this in 
 mind when reading through the code and if I have done something wrong pull requests would be much appreciated!
+
+<style>
+table {
+    width: 100%;
+}
+</style>
 
 ## 🔧 Modifiers
 
@@ -135,9 +141,7 @@ It should look like this by default:
 | DisabledModifiers             | List of modifiers that are disabled.                                                           |
 
 
-<div align="center">
 # Random rounds
-</div>
 
 Random rounds is the functionality from the NadeKing videos where at the start of each round a random number of modifiers will be activated, 
 these are then deactivated at the end of the round and more are activated next round. It allows these modifiers to just work without having to 
@@ -186,19 +190,40 @@ If this was placed in that folder and the server was either restarted or the use
 You would then see it listed as **SomeModifier** when doing `!listmodifiers`.
 
 Activating it would enable infinite ammo and put every client in noclip.
-Deactivating it would roll-back to whatever those same Cvar's was set to before hand.
+Deactivating it would roll-back to whatever those same Cvar's was set to beforehand.
 
 **NOTE**: These modifiers do roll-back in reverse order they are applied to avoid jumbled configs and I have 
 stress tested these but do keep it in mind if adding custom ones.
 
+## 🏗️ Building The Project
+
+I've included the premake5 binary in the project with some scripts so anyone can easily grab the project and make modifications to it with ease.
+It's much simpler than CMake to set-up and for this project's needs I though CMake was overkill.
+
+**Build Steps**:
+
+1. Grab the project by either cloning it or downloading it as a .zip,
+2. Once you have the project files in a folder, run the script `/Scripts/GenerateProjectFiles.bat`.
+3. This will set-up the project solution and csharp project from GameModifiers.
+4. Open the solution in Visual Studio or Rider and everything should be good to go!
+
+**Packaging Steps**:
+
+1. Run the script `/Scripts/Package.bat`.
+2. It will ask to choose either (1) Release or (2) Debug configuration. So type 1/2 and hit enter.
+3. Dotnet build will be run for `/Build/GameModifiers/GameModifiers.csproj`, successful package will read "Packing complete!".
+4. Navigate to `/Packages/` and the new packaged version of the plugin in the format `GameModifiers-CONFIG-DATE-TIME`.
+
+Any issues during packaging are printing to the console output including code errors or file structure etc.\
+If you are having trouble open a new issue and I'll sort it asap.
 
 ## 🚧 TODO
 
-Theres a few modifiers I wanted to work on:
+There's a few modifiers I wanted to work on:
 
 - PropHunt: The bomb is removed from T side and the CT's are all turned into random props and have to hide and survive the round to win.
-- RandomSmokes: Random smokes will pop across the map. (From nade king video)
-- Inferno: Random molotovs will drop across the map.
+- RandomSmokes: Random smokes will pop across the map. (From NadeKing video)
+- Inferno: Random molotov's will drop across the map.
 - TeamReload: When one person reloads everyone reloads.
 - ShortSighted: Darken the players view distance or reduce the far clip plane. (Couldn't figure this one out)
 

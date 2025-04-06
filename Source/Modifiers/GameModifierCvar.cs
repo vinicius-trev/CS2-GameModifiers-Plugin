@@ -6,8 +6,6 @@ using System.Linq;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
-using GameModifiers.Types;
-
 namespace GameModifiers.Modifiers;
 
 class ModifierCvarConfig : ModifierConfig
