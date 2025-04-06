@@ -105,7 +105,7 @@ This has a things that you can configure to your liking.
 
 It should look like this by default:
 
-``
+```
 {
   "ShowCentreMsg": true,
   "CanRepeat": false,
@@ -114,7 +114,7 @@ It should look like this by default:
   "DisabledModifiers": [],
   "ConfigVersion": 1
 }
-``
+```
 
 # Variables
 
@@ -127,7 +127,9 @@ It should look like this by default:
 | DisabledModifiers             | List of modifiers that are disabled.                                                           |
 
 
+<div align="center">
 # Random rounds
+</div>
 
 Random rounds is the functionality from the NadeKing videos where at the start of each round a random number of modifiers will be activated, 
 these are then deactivated at the end of the round and more are activated next round. It allows these modifiers to just work without having to 
@@ -139,11 +141,11 @@ It works very nicely with the [MatchZy](https://github.com/shobhit-pathak/MatchZ
 
 Say I type these commands in order -
 
-``
+```
 !minrandomrounds 1
 !maxrandomrounds 3
 !randomrounds               
-``
+```
 
 Next time a new round starts all modifiers are disabled and then a random number of randomly selected modifiers within range 1-3 will be activated.
 
@@ -159,17 +161,17 @@ By using the `ConVarModifier.example` as a guide it is really easy to implement 
 File: SomeExampleModifier.cfg placed in `csgo/addons/counterstrikesharp/configs/plugins/GameModifiers/ConVarModifiers/`.
 
 ```
-modifier_name 					SomeModifier
-modifier_description 			This is an example description...
-supports_random_rounds 			true
-incompatible_modifiers 			[Bhop, Surf]
+modifier_name               SomeModifier
+modifier_description        This is an example description...
+supports_random_rounds      true
+incompatible_modifiers      [Bhop, Surf]
 
-sv_cheats 						1
-sv_infiniteammo 				1
+sv_cheats                   1
+sv_infiniteammo             1
 
 Client:
 
-noclip 							
+noclip					
 
 ```
 
@@ -182,6 +184,7 @@ Deactivating it would roll-back to whatever those same Cvar's was set to before 
 **NOTE**: These modifiers do roll-back in reverse order they are applied to avoid jumbled configs and I have 
 stress tested these but do keep it in mind if adding custom ones.
 
+
 ## 🚧 TODO
 
 Theres a few modifiers I wanted to work on:
@@ -192,4 +195,7 @@ Theres a few modifiers I wanted to work on:
 - TeamReload: When one person reloads everyone reloads.
 - ShortSighted: Darken the players view distance or reduce the far clip plane. (Couldn't figure this one out)
 
-Suggestions? Would love to here some feedback and ideas as they are quite easy to add.
+
+## 📚 Suggestions
+
+Would love to here some feedback and ideas as they are quite easy to add.
