@@ -3,6 +3,7 @@
 # CS2-GameModifiers-Plugin
 
 ![GitHub issues](https://img.shields.io/github/issues/Lewisscrivens/CS2-GameModifiers-Plugin)
+![GitHub dicussions](https://img.shields.io/github/discussions/Lewisscrivens/CS2-GameModifiers-Plugin)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Lewisscrivens/CS2-GameModifiers-Plugin)
 
 </div>
@@ -204,4 +205,4 @@ Theres a few modifiers I wanted to work on:
 
 ## 📚 Suggestions
 
-Would love to here some feedback and ideas as they are quite easy to add.
+Would love to here some [feedback](https://github.com/Lewisscrivens/CS2-GameModifiers-Plugin/discussions/1) and ideas as they are quite easy to add.
