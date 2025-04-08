@@ -51,7 +51,7 @@ public abstract class GameModifierModelSwap : GameModifierBase
 
     protected void SetPlayerModel(CCSPlayerController? player, CsTeam teamModel)
     {
-        if (player == null || !player.IsValid || !player.PawnIsAlive)
+        if (player == null || !player.IsValid)
         {
             return;
         }
@@ -83,7 +83,7 @@ public abstract class GameModifierModelSwap : GameModifierBase
 
     protected virtual void ResetPlayerModel(CCSPlayerController? player)
     {
-        if (player == null || !player.IsValid || !player.PawnIsAlive)
+        if (player == null || !player.IsValid)
         {
             return;
         }

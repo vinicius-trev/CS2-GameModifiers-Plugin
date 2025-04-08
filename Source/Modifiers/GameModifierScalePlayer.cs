@@ -72,7 +72,7 @@ public abstract class GameModifierScalePlayer : GameModifierBase
 
     protected void ResetPlayerScale(CCSPlayerController? player)
     {
-        if (player == null || !player.IsValid || !player.PawnIsAlive)
+        if (player == null || !player.IsValid)
         {
             return;
         }

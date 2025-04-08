@@ -1,11 +1,11 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.VisualBasic.CompilerServices;
+using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 
 namespace GameModifiers.Modifiers;
 
@@ -179,7 +179,7 @@ public class GameModifierOnePerMag : GameModifierWeapon
 public class GameModifierOneInTheChamber : GameModifierWeapon
 {
     public override string Name => "OneInTheChamber";
-    public override string Description => "1 bullet per kill";
+    public override string Description => "1 bullet per kill, pistols one hit";
     public override bool SupportsRandomRounds => true;
     public override HashSet<string> IncompatibleModifiers =>
     [
@@ -194,6 +194,8 @@ public class GameModifierOneInTheChamber : GameModifierWeapon
         {
             Core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
         }
+        
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnTakeDamage, HookMode.Pre);
     }
 
     public override void Disabled()
@@ -202,6 +204,8 @@ public class GameModifierOneInTheChamber : GameModifierWeapon
         {
             Core.DeregisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
         }
+        
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Unhook(OnTakeDamage, HookMode.Pre);
 
         base.Disabled();
     }
@@ -252,6 +256,13 @@ public class GameModifierOneInTheChamber : GameModifierWeapon
     private HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
     {
         AddBullet(@event.Attacker, @event.Weapon);
+        return HookResult.Continue;
+    }
+    
+    private HookResult OnTakeDamage(DynamicHook hook)
+    {
+        CTakeDamageInfo damageInfo = hook.GetParam<CTakeDamageInfo>(1);
+        damageInfo.Damage *= 10.0f;
         return HookResult.Continue;
     }
 }

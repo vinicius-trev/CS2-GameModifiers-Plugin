@@ -126,13 +126,14 @@ It should look like this by default:
 
 # Variables
 
-| Config Variable               | Description                                                                                    |
-|-------------------------------|------------------------------------------------------------------------------------------------|
-| ShowCentreMsg                 | When random rounds is activated/deactivated a centre message will pop-up informing all players |
-| CanRepeat                     | Can modifiers repeat two rounds in a row during random rounds?                                 |
-| MinRandomModifiersPerRound    | Minimum number of random modifiers to activate during random rounds                            |
-| MaxRandomModifiersPerRound    | Maximum number of random modifiers to activate during random rounds                            |
-| DisabledModifiers             | List of modifiers that are disabled.                                                           |
+| Config Variable              | Description                                                                                    |
+|------------------------------|------------------------------------------------------------------------------------------------|
+| RandomRoundsEnabledByDefault | Random rounds are enabled by default when the server starts                                    |
+| ShowCentreMsg                | When random rounds is activated/deactivated a centre message will pop-up informing all players |
+| CanRepeat                    | Can modifiers repeat two rounds in a row during random rounds?                                 |
+| MinRandomRounds              | Minimum number of random modifiers to activate during random rounds                            |
+| MaxRandomRounds              | Maximum number of random modifiers to activate during random rounds                            |
+| DisabledModifiers            | List of modifiers that are disabled                                                            |
 
 
 # Random rounds

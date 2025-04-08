@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace GameModifiers.Modifiers;
 
@@ -15,22 +17,17 @@ public abstract class GameModifierRemoveWeapons : GameModifierBase
     {
         base.Enabled();
 
+        // If this has managed to call again, not much more we can do than just stop
+        // keeping track of what we originally had in the list.
+        CachedItems.Clear();
+        
         if (Core != null)
         {
-            Core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
+            Core.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            Core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
         }
 
-        Utilities.GetPlayers().ForEach(player =>
-        {
-            List<string> weaponNames = GameModifiersUtils.GetWeapons(player)
-                .Where(weapon => weapon != null && weapon.IsValid)
-                .Select(weapon => weapon!.DesignerName)
-                .ToList();
-
-            CachedItems.Add(player.Slot, weaponNames);
-
-            GameModifiersUtils.RemoveWeapons(player);
-        });
+        Utilities.GetPlayers().ForEach(RemoveWeapons);
 
         GameModifiersUtils.PrintTitleToChatAll("Removing items, they will be returned when the modifier is disabled.");
     }
@@ -39,41 +36,117 @@ public abstract class GameModifierRemoveWeapons : GameModifierBase
     {
         if (Core != null)
         {
-            Core.DeregisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
+            Core.RemoveListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
         }
-
-        Utilities.GetPlayers().ForEach(GameModifiersUtils.RemoveWeapons);
 
         foreach (var cachedWeaponPair in CachedItems)
         {
-            CCSPlayerController? player = Utilities.GetPlayerFromSlot(cachedWeaponPair.Key);
-            if (player == null || !player.IsValid)
-            {
-                continue;
-            }
-
-            foreach (var itemName in cachedWeaponPair.Value)
-            {
-                player.GiveNamedItem(itemName);
-            }
+            TryReturnWeapons(Utilities.GetPlayerFromSlot(cachedWeaponPair.Key));
         }
-
-        CachedItems.Clear();
+        
         GameModifiersUtils.PrintTitleToChatAll("Returning items...");
 
         base.Disabled();
     }
 
-    private HookResult OnPlayerSpawned(EventPlayerSpawned @event, GameEventInfo info)
+    private void RemoveWeapons(CCSPlayerController? player)
     {
-        var player = @event.Userid;
-        if (player == null || !player.IsValid || player.Connected != PlayerConnectedState.PlayerConnected)
+        if (player == null || !player.IsValid)
         {
-            return HookResult.Continue;
+            return;
+        }
+        
+        var playerPawn = player.PlayerPawn.Value;
+        if (playerPawn == null || !playerPawn.IsValid)
+        {
+            return;
+        }
+        
+        List<CHandle<CBasePlayerWeapon>>? weaponHandles = playerPawn.WeaponServices?.MyWeapons.ToList();
+        if (weaponHandles == null)
+        {
+            return;
         }
 
-        player.RemoveWeapons();
+        List<string> cachedWeapons = new List<string>();
+        foreach (CHandle<CBasePlayerWeapon> weaponHandle in weaponHandles)
+        {
+            if (weaponHandle.IsValid && weaponHandle.Value != null)
+            {
+                switch (GameModifiersUtils.GetWeaponType(weaponHandle.Value))
+                {
+                    case CSWeaponType.WEAPONTYPE_PISTOL:
+                    case CSWeaponType.WEAPONTYPE_SUBMACHINEGUN:
+                    case CSWeaponType.WEAPONTYPE_RIFLE:
+                    case CSWeaponType.WEAPONTYPE_SHOTGUN:
+                    case CSWeaponType.WEAPONTYPE_SNIPER_RIFLE:
+                    case CSWeaponType.WEAPONTYPE_MACHINEGUN:
+                    case CSWeaponType.WEAPONTYPE_TASER:
+                    case CSWeaponType.WEAPONTYPE_GRENADE:
+                    {
+                        cachedWeapons.Add(weaponHandle.Value.DesignerName);
+                    } 
+                    break;
+                    default: break;
+                }
+            }
+        }
+
+        CachedItems.Add(player.Slot, cachedWeapons);
+
+        GameModifiersUtils.RemoveWeapons(player);
+    }
+
+    private void TryReturnWeapons(CCSPlayerController? player)
+    {
+        if (player == null || !player.IsValid  || !player.PawnIsAlive)
+        {
+            return;
+        }
+        
+        if (CachedItems.ContainsKey(player.Slot))
+        {
+            GameModifiersUtils.RemoveWeapons(player);
+            
+            foreach (var itemName in CachedItems[player.Slot])
+            {
+                player.GiveNamedItem(itemName);
+            }
+
+            CachedItems.Remove(player.Slot);
+        }
+    }
+    
+    private HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    {
+        // While active just remove any weapons on spawn.
+        if (IsActive)
+        {
+            RemoveWeapons(@event.Userid);
+            return HookResult.Continue;
+        }
+        
+        Server.NextFrame(() =>
+        {
+            // While inactive and still bound, there must be dead players waiting for items to be returned.
+            TryReturnWeapons(@event.Userid);
+        
+            // Check if we can deregister this even if we are no longer active and have no tracked items.
+            if (CachedItems.Count <= 0 && Core != null)
+            {
+                Core.DeregisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            }
+        });
+        
         return HookResult.Continue;
+    }
+    
+    private void OnClientDisconnect(int slot)
+    {
+        if (CachedItems.ContainsKey(slot))
+        {
+            CachedItems.Remove(slot);
+        }
     }
 }
 
@@ -101,46 +174,7 @@ public class GameModifierRandomWeapon : GameModifierRemoveWeapons
         GameModifiersUtils.GetModifierName<GameModifierGrenadesOnly>(),
         GameModifiersUtils.GetModifierName<GameModifierRandomWeapons>()
     ];
-
-    protected static List<string> RandomWeapons =
-    [
-        "weapon_scar20",
-        "weapon_sg553",
-        "weapon_revolver",
-        "weapon_m249",
-        "weapon_mac10",
-        "weapon_ak47",
-        "weapon_deagle",
-        "weapon_m4a1",
-        "weapon_m4a4",
-        "weapon_tec9",
-        "weapon_xm1014",
-        "weapon_p250",
-        "weapon_famas",
-        "weapon_aug",
-        "weapon_mp5sd",
-        "weapon_mag7",
-        "weapon_bizon",
-        "weapon_ssg08",
-        "weapon_ump45",
-        "weapon_mp9",
-        "weapon_p90",
-        "weapon_hkp2000",
-        "weapon_glock",
-        "weapon_awp",
-        "weapon_sawedoff",
-        "weapon_taser",
-        "weapon_mp7",
-        "weapon_sg556",
-        "weapon_nova",
-        "weapon_m4a1_silencer",
-        "weapon_fiveseven",
-        "weapon_cz75a",
-        "weapon_usp_silencer",
-        "weapon_g3sg1",
-        "weapon_negev"
-    ];
-
+    
     public override void Enabled()
     {
         base.Enabled();
@@ -150,7 +184,7 @@ public class GameModifierRandomWeapon : GameModifierRemoveWeapons
 
     protected virtual void ApplyRandomWeapon()
     {
-        string randomWeaponName = RandomWeapons[Random.Shared.Next(RandomWeapons.Count)];
+        string randomWeaponName = GameModifiersUtils.GetRandomRangedWeaponName();
         GameModifiersUtils.PrintTitleToChatAll($"{randomWeaponName.Substring(7)} round.");
 
         Utilities.GetPlayers().ForEach(player =>
@@ -176,7 +210,7 @@ public class GameModifierRandomWeapons : GameModifierRandomWeapon
     {
         Utilities.GetPlayers().ForEach(player =>
         {
-            string randomWeaponName = RandomWeapons[Random.Shared.Next(RandomWeapons.Count)];
+            string randomWeaponName = GameModifiersUtils.GetRandomRangedWeaponName();
             GameModifiersUtils.PrintTitleToChat(player, $"{randomWeaponName.Substring(7)} for random weapon round.");
             GameModifiersUtils.GiveAndEquipWeapon(player, randomWeaponName);
         });

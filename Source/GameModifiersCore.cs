@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -19,7 +19,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     public override string ModuleName => "Game Modifiers";
     public override string ModuleAuthor => "Shr00mDev";
     public override string ModuleDescription => "Apply game modifiers dynamically based of pre-defined classes or config files.";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.0.1";
 
     public GameModifiersConfig Config { get; set; } = new();
 
@@ -29,15 +29,15 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     private List<GameModifierBase> ActiveModifiers { get; } = new();
     private List<GameModifierBase> LastActiveModifiers { get; set; } = new();
 
-    private int _minRandomModifiersPerRound = 1;
-    private int _maxRandomModifiersPerRound = 1;
+    private int _minRandomRounds = 1;
+    private int _maxRandomRounds = 1;
 
     public void OnConfigParsed(GameModifiersConfig config)
     {
         Config = config;
 
-        _minRandomModifiersPerRound = config.MinRandomModifiersPerRound;
-        _maxRandomModifiersPerRound = config.MaxRandomModifiersPerRound;
+        _minRandomRounds = config.MinRandomRounds;
+        _maxRandomRounds = config.MaxRandomRounds;
     }
 
     public override void Load(bool hotReload)
@@ -82,6 +82,11 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             }
 
             registeredModifierNames.Add(modifier.Name);
+        }
+
+        if (Config.RandomRoundsEnabledByDefault)
+        {
+            RandomRoundsEnabled = true;
         }
     }
 
@@ -350,7 +355,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
         if (int.TryParse(minInput, out int result))
         {
             GameModifiersUtils.PrintTitleToChat(player, $"Min modifiers for random rounds set to {minInput}");
-            _minRandomModifiersPerRound = result;
+            _minRandomRounds = result;
         }
         else
         {
@@ -373,7 +378,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
         if (int.TryParse(maxInput, out int result))
         {
             GameModifiersUtils.PrintTitleToChat(player, $"Max modifiers for random rounds set to {maxInput}");
-            _maxRandomModifiersPerRound = result;
+            _maxRandomRounds = result;
         }
         else
         {
@@ -439,7 +444,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             ToggleModifierCommand(player, typeof(GameModifierXray));
         }
     }
-
+    
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
@@ -451,6 +456,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
                 return HookResult.Continue;
             }
 
+            RemoveAllModifiers();
             ApplyRandomRoundsForRound();
         }
         else
@@ -538,7 +544,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     public void ApplyRandomRoundsForRound()
     {
         Random random = new Random();
-        int randomModifiersCount = random.Next(_minRandomModifiersPerRound, _maxRandomModifiersPerRound);
+        int randomModifiersCount = random.Next(_minRandomRounds, _maxRandomRounds);
 
         if (AddRandomModifiers(randomModifiersCount, out List<GameModifierBase> addedModifiers))
         {
@@ -727,11 +733,20 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
     public void RemoveAllModifiers()
     {
+        if (ActiveModifiers.Count <= 0)
+        {
+            return;
+        }
+        
+        GameModifiersUtils.PrintTitleToChatAll("Removing modifiers:");
+
         // Undo modifiers in the order they were applied.
         for (var index = ActiveModifiers.Count - 1; index >= 0; index--)
         {
             var modifier = ActiveModifiers[index];
             modifier.Disabled();
+            
+            GameModifiersUtils.PrintToChatAll($"• {modifier.Name}");
         }
 
         ActiveModifiers.Clear();
@@ -853,7 +868,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
         GameModifiersUtils.PrintTitleToChatAll("Activating modifiers:");
         foreach (var modifier in modifiers)
         {
-            GameModifiersUtils.PrintToChatAll($"{modifier.Name} - {ChatColors.Grey}[{modifier.Description}]");
+            GameModifiersUtils.PrintToChatAll($"• {modifier.Name} - {ChatColors.Grey}[{modifier.Description}]");
         }
 
         foreach (GameModifierBase? modifier in modifiers)

@@ -86,7 +86,7 @@ public class GameModifierThirdPerson : GameModifierBase
 
     private void ApplyFirstPersonToPlayer(CCSPlayerController? player)
     {
-        if (player == null || !player.IsValid || !player.PawnIsAlive)
+        if (player == null || !player.IsValid)
         {
             return;
         }
@@ -122,7 +122,7 @@ public class GameModifierThirdPerson : GameModifierBase
     private void OnClientDisconnect(int slot)
     {
         CCSPlayerController? player = Utilities.GetPlayerFromSlot(slot);
-        if (player == null || player.IsValid is not true)
+        if (player == null || !player.IsValid)
         {
             if (_thirdPersonAttachPointInstances.ContainsKey(slot))
             {

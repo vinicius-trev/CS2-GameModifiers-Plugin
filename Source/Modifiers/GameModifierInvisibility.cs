@@ -87,7 +87,7 @@ public abstract class GameModifierInvisibleBase : GameModifierBase
     private void OnClientDisconnect(int slot)
     {
         CCSPlayerController? player = Utilities.GetPlayerFromSlot(slot);
-        if (player == null || player.IsValid is not true)
+        if (player == null || !player.IsValid)
         {
             if (CachedInvisiblePlayers.Contains(slot))
             {

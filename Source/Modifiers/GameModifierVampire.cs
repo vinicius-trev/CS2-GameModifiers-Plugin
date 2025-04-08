@@ -27,7 +27,7 @@ public class GameModifierVampire : GameModifierBase
             Core.DeregisterEventHandler<EventPlayerHurt>(OnPlayerHurtEvent);
         }
 
-        // For now we just reset everyones health to default on removal ¯\_(ツ)_/¯
+        // For now, we just reset everyone's health to default on removal ¯\_(ツ)_/¯
         Utilities.GetPlayers().ForEach(controller =>
         {
             var playerPawn = controller.PlayerPawn.Value;

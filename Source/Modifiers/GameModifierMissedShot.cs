@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 
 using CounterStrikeSharp.API;
@@ -16,7 +17,7 @@ public abstract class GameModifierMissedShot : GameModifierBase
 
         if (Core != null)
         {
-            Core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
+            Core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt, HookMode.Pre);
             Core.RegisterEventHandler<EventWeaponFire>(OnWeaponFire, HookMode.Pre);
             Core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
         }
@@ -26,8 +27,8 @@ public abstract class GameModifierMissedShot : GameModifierBase
     {
         if (Core != null)
         {
-            Core.RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
-            Core.RegisterEventHandler<EventWeaponFire>(OnWeaponFire);
+            Core.DeregisterEventHandler<EventPlayerHurt>(OnPlayerHurt, HookMode.Pre);
+            Core.DeregisterEventHandler<EventWeaponFire>(OnWeaponFire, HookMode.Pre);
             Core.RemoveListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
         }
 
@@ -41,6 +42,11 @@ public abstract class GameModifierMissedShot : GameModifierBase
         CCSPlayerController? attackingPlayer = @event.Attacker;
         CCSPlayerController? damagedPlayer = @event.Userid;
         if (attackingPlayer == null || !attackingPlayer.IsValid || damagedPlayer == null || !damagedPlayer.IsValid || !damagedPlayer.PawnIsAlive)
+        {
+            return HookResult.Continue;
+        }
+        
+        if (ShouldCountMissedShots(attackingPlayer) == false)
         {
             return HookResult.Continue;
         }
@@ -71,7 +77,12 @@ public abstract class GameModifierMissedShot : GameModifierBase
         {
             return HookResult.Continue;
         }
-
+        
+        if (ShouldCountMissedShots(player) == false)
+        {
+            return HookResult.Continue;
+        }
+        
         int lastHitBullets = 0;
         if (CachedHitBullets.ContainsKey(player.Slot))
         {
@@ -93,6 +104,25 @@ public abstract class GameModifierMissedShot : GameModifierBase
         });
 
         return HookResult.Continue;
+    }
+
+    private bool ShouldCountMissedShots(CCSPlayerController? player)
+    {
+        switch (GameModifiersUtils.GetActiveWeaponType(player))
+        {
+            case CSWeaponType.WEAPONTYPE_KNIFE:
+            case CSWeaponType.WEAPONTYPE_PISTOL:
+            case CSWeaponType.WEAPONTYPE_SUBMACHINEGUN:
+            case CSWeaponType.WEAPONTYPE_RIFLE:
+            case CSWeaponType.WEAPONTYPE_SHOTGUN:
+            case CSWeaponType.WEAPONTYPE_SNIPER_RIFLE:
+            case CSWeaponType.WEAPONTYPE_MACHINEGUN:
+            case CSWeaponType.WEAPONTYPE_TASER:
+                return true;
+            default: break;
+        }
+
+        return false;
     }
 
     private void OnClientDisconnect(int slot)

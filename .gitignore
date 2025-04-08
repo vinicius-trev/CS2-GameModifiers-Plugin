@@ -8,6 +8,7 @@ Packages/
 
 *.csproj
 *.sln
+*.DotSettings.user
 
 # Allow
 !ThirdParty/Binaries/Premake/premake5.exe

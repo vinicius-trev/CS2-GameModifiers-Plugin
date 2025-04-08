@@ -21,6 +21,43 @@ namespace GameModifiers;
 
 internal static class GameModifiersUtils
 {
+    public static readonly List<string> RangedWeaponNames =
+    [
+        "weapon_scar20",
+        "weapon_revolver",
+        "weapon_m249",
+        "weapon_mac10",
+        "weapon_ak47",
+        "weapon_deagle",
+        "weapon_m4a1",
+        "weapon_m4a1_silencer",
+        "weapon_tec9",
+        "weapon_xm1014",
+        "weapon_p250",
+        "weapon_famas",
+        "weapon_aug",
+        "weapon_mp5sd",
+        "weapon_mag7",
+        "weapon_bizon",
+        "weapon_ssg08",
+        "weapon_ump45",
+        "weapon_mp9",
+        "weapon_p90",
+        "weapon_hkp2000",
+        "weapon_glock",
+        "weapon_awp",
+        "weapon_sawedoff",
+        "weapon_taser",
+        "weapon_mp7",
+        "weapon_sg556",
+        "weapon_nova",
+        "weapon_fiveseven",
+        "weapon_cz75a",
+        "weapon_usp_silencer",
+        "weapon_g3sg1",
+        "weapon_negev"
+    ];
+    
     public static List<CCSPlayerController> GetPlayerFromName(string name)
     {
         return Utilities.GetPlayers().FindAll(x => x.PlayerName.Contains(name, StringComparison.OrdinalIgnoreCase));
@@ -445,6 +482,11 @@ internal static class GameModifiersUtils
         return player?.PlayerPawn.Value?.WeaponServices?.ActiveWeapon.Value;
     }
 
+    public static CSWeaponType GetActiveWeaponType(CCSPlayerController? player)
+    {
+        return GetWeaponType(GetActiveWeapon(player));
+    }
+
     public static CBasePlayerWeapon? GetWeapon(CCSPlayerController? player, string weaponName)
     {
         return player?.PlayerPawn.Value?.WeaponServices?.MyWeapons.FirstOrDefault(weapon => weapon.Value!.DesignerName.Contains(weaponName))?.Value;
@@ -539,11 +581,17 @@ internal static class GameModifiersUtils
                 case CSWeaponType.WEAPONTYPE_MACHINEGUN:
                 case CSWeaponType.WEAPONTYPE_TASER:
                 case CSWeaponType.WEAPONTYPE_GRENADE:
-                case CSWeaponType.WEAPONTYPE_EQUIPMENT:
                 {
-                    pawn.WeaponServices.ActiveWeapon.Raw = weapon.EntityHandle;
+                    pawn.WeaponServices.ActiveWeapon.Raw = weapon.EntityHandle.Raw;
                     player.DropActiveWeapon();
-                    weapon.AcceptInput("kill");
+                    
+                    Server.NextFrame(() =>
+                    {
+                        if (weapon != null && weapon.IsValid)
+                        {
+                            weapon.AcceptInput("Kill");
+                        }
+                    });
                 }
                 break;
                 default: break;
@@ -556,7 +604,7 @@ internal static class GameModifiersUtils
             break;
         }
     }
-
+    
     public static float GetWeaponDamage(CBasePlayerWeapon? weapon)
     {
         if (weapon == null || !weapon.IsValid)
@@ -646,6 +694,11 @@ internal static class GameModifiersUtils
         }
 
         return weaponVData.WeaponType;
+    }
+
+    public static string GetRandomRangedWeaponName()
+    {
+        return RangedWeaponNames[Random.Shared.Next(RangedWeaponNames.Count)];
     }
 
     public static List<CCSPlayerController> GetSpectatingPlayers()
