@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
@@ -20,7 +21,7 @@ public abstract class GameModifierWeapon : GameModifierBase
         if (Core != null)
         {
             Core.RegisterEventHandler<EventItemEquip>(OnItemEquip);
-            Core.RegisterEventHandler<EventEntityKilled>(OnEntityKilled);
+            Core.RegisterEventHandler<EventEntityKilled>(OnEntityKilled, HookMode.Pre);
         }
 
         Utilities.GetPlayers().ForEach(TryApplyWeaponModifier);
@@ -31,20 +32,17 @@ public abstract class GameModifierWeapon : GameModifierBase
         if (Core != null)
         {
             Core.DeregisterEventHandler<EventItemEquip>(OnItemEquip);
-            Core.DeregisterEventHandler<EventEntityKilled>(OnEntityKilled);
+            Core.DeregisterEventHandler<EventEntityKilled>(OnEntityKilled, HookMode.Pre);
         }
 
-        Utilities.GetPlayers().ForEach(controller =>
+        foreach (uint weaponIndex in CachedAppliedWeapons)
         {
-            foreach (uint weaponIndex in CachedAppliedWeapons)
+            CBasePlayerWeapon? weapon = Utilities.GetEntityFromIndex<CBasePlayerWeapon>((int)weaponIndex);
+            if (weapon != null && weapon.IsValid)
             {
-                CBasePlayerWeapon? weapon = Utilities.GetEntityFromIndex<CBasePlayerWeapon>((int)weaponIndex);
-                if (weapon != null && weapon.IsValid)
-                {
-                    RemoveWeaponModifier(weapon);
-                }
+                RemoveWeaponModifier(weapon);
             }
-        });
+        }
 
         CachedAppliedWeapons.Clear();
 
@@ -54,7 +52,7 @@ public abstract class GameModifierWeapon : GameModifierBase
     private void TryApplyWeaponModifier(CCSPlayerController? player)
     {
         List<CBasePlayerWeapon?> weapons = GameModifiersUtils.GetWeapons(player);
-        if (weapons.Count <= 0)
+        if (!weapons.Any())
         {
             return;
         }
@@ -96,6 +94,8 @@ public abstract class GameModifierWeapon : GameModifierBase
         var index = (uint)@event.EntindexKilled;
         if (CachedAppliedWeapons.Contains(index))
         {
+            CBasePlayerWeapon? removedWeapon = Utilities.GetEntityFromIndex<CBasePlayerWeapon>((int)index);
+            RemoveWeaponModifier(removedWeapon);
             CachedAppliedWeapons.Remove(index);
         }
 
@@ -110,7 +110,8 @@ public class GameModifierOnePerMag : GameModifierWeapon
     public override bool SupportsRandomRounds => true;
     public override HashSet<string> IncompatibleModifiers =>
     [
-        GameModifiersUtils.GetModifierName<GameModifierOneInTheChamber>()
+        GameModifiersUtils.GetModifierName<GameModifierOneInTheChamber>(),
+        "InfiniteAmmo"
     ];
     private readonly Dictionary<string, int> _cachedMaxClip1 = new();
 
@@ -130,14 +131,17 @@ public class GameModifierOnePerMag : GameModifierWeapon
         if (!_cachedMaxClip1.ContainsKey(weapon.DesignerName))
         {
             _cachedMaxClip1.Add(weapon.DesignerName, weaponVData.MaxClip1);
+            
+            Server.NextFrame(() =>
+            {
+                weaponVData.MaxClip1 = 1;
+            });
         }
 
         Server.NextFrame(() =>
         {
             weapon.Clip1 = 1;
             Utilities.SetStateChanged(weapon, "CBasePlayerWeapon", "m_iClip1");
-
-            weaponVData.MaxClip1 = 1;
         });
 
         return true;
@@ -183,7 +187,8 @@ public class GameModifierOneInTheChamber : GameModifierWeapon
     public override bool SupportsRandomRounds => true;
     public override HashSet<string> IncompatibleModifiers =>
     [
-        GameModifiersUtils.GetModifierName<GameModifierOnePerMag>()
+        GameModifiersUtils.GetModifierName<GameModifierOnePerMag>(),
+        "InfiniteAmmo"
     ];
 
     public override void Enabled()
@@ -405,39 +410,3 @@ public class GameModifierSlowFireRate : GameModifierFireRateBase
     ];
     public override float FireRateMultiplier { get; protected set; } = 0.5f;
 }
-
-/*
-public class GameModifierTeamReload : GameModifierBase
-{
-    public override string Name => "TeamReload";
-    public override string Description => "Everyone reloads together on this team";
-    public override bool SupportsRandomRounds => true;
-
-    public override void Enabled()
-    {
-        base.Enabled();
-
-        if (Core != null)
-        {
-            Core.RegisterEventHandler<EventWeaponReload>(OnWeaponReload);
-        }
-    }
-
-    public override void Disabled()
-    {
-        if (Core != null)
-        {
-            Core.DeregisterEventHandler<EventWeaponReload>(OnWeaponReload);
-        }
-
-        base.Disabled();
-    }
-
-    private HookResult OnWeaponReload(EventWeaponReload @event, GameEventInfo info)
-    {
-        // cannot figure out how to force reload everyone :( for now.
-
-        return HookResult.Continue;
-    }
-}
-*/

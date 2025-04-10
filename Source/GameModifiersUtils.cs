@@ -90,7 +90,7 @@ internal static class GameModifiersUtils
 
         PrintTitleToChat(player, message);
 
-        if (modifiers.Count <= 0)
+        if (!modifiers.Any())
         {
             player.PrintToChat($"None");
             return;
@@ -248,7 +248,7 @@ internal static class GameModifiersUtils
         modelGlow.DispatchSpawn();
         modelGlow.AcceptInput("FollowEntity", modelRelay, modelGlow, "!activator");
 
-        modelGlow.Render = Color.Black;
+        modelGlow.Render = Color.FromArgb(1, 255, 255, 255);
         modelGlow.Spawnflags = 256u;
         modelGlow.RenderMode = RenderMode_t.kRenderGlow;
         modelGlow.Glow.GlowRange = 5000;
@@ -264,13 +264,13 @@ internal static class GameModifiersUtils
         CDynamicProp? modelRelay = Utilities.GetEntityFromIndex<CDynamicProp>(relayIndex);
         if (modelRelay != null && modelRelay.IsValid)
         {
-            modelRelay.Remove();
+            modelRelay.AcceptInput("Kill");
         }
 
         CDynamicProp? modelGlow = Utilities.GetEntityFromIndex<CDynamicProp>(glowIndex);
         if (modelGlow != null && modelGlow.IsValid)
         {
-            modelGlow.Remove();
+            modelGlow.AcceptInput("Kill");
         }
 
         return true;
@@ -559,7 +559,7 @@ internal static class GameModifiersUtils
         }
 
         List<CBasePlayerWeapon?> weapons = GetWeapons(player);
-        if (weapons.Count <= 0)
+        if (!weapons.Any())
         {
             return;
         }

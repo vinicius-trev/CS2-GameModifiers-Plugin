@@ -19,7 +19,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     public override string ModuleName => "Game Modifiers";
     public override string ModuleAuthor => "Shr00mDev";
     public override string ModuleDescription => "Apply game modifiers dynamically based of pre-defined classes or config files.";
-    public override string ModuleVersion => "1.0.1";
+    public override string ModuleVersion => "1.0.2";
 
     public GameModifiersConfig Config { get; set; } = new();
 
@@ -95,7 +95,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
         RegisteredModifiers.Clear();
 
         List<Type> modifierTypes = GameModifiersUtils.GetAllChildClasses<GameModifierBase>();
-        if (modifierTypes.Count <= 0)
+        if (!modifierTypes.Any())
         {
             Console.WriteLine("[GameModifiers::InitialiseModifiers] No implemented modifiers found!");
             return;
@@ -402,7 +402,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             return;
         }
 
-        if (RegisteredModifiers.Count <= 0)
+        if (!RegisteredModifiers.Any())
         {
             GameModifiersUtils.PrintTitleToChat(player, "No registered modifiers found! Cannot re-roll modifiers.");
             return;
@@ -441,7 +441,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     {
         if (player != null)
         {
-            ToggleModifierCommand(player, typeof(GameModifierXray));
+            ToggleModifierCommand(player, typeof(GameModifierXrayAll));
         }
     }
     
@@ -450,7 +450,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     {
         if (RandomRoundsEnabled)
         {
-            if (RegisteredModifiers.Count <= 0)
+            if (!RegisteredModifiers.Any())
             {
                 GameModifiersUtils.PrintTitleToChatAll("No registered modifiers found! Skipping random round...");
                 return HookResult.Continue;
@@ -496,7 +496,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
     public bool AnyModifiersActive()
     {
-        return ActiveModifiers.Count > 0;
+        return ActiveModifiers.Any();
     }
 
     public bool IsModifierActive(GameModifierBase? modifier)
@@ -633,7 +633,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
     public bool AddModifierByName(string modifierName, out string message)
     {
-        if (RegisteredModifiers.Count <= 0)
+        if (!RegisteredModifiers.Any())
         {
             message = "No modifiers are registered.";
             return false;
@@ -667,7 +667,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             }
         }
 
-        if (blockingModifierNames.Count > 0)
+        if (blockingModifierNames.Any())
         {
             message = $"{modifier.Name} modifier is blocked by:";
             foreach (var blockingModifierName in blockingModifierNames)
@@ -691,13 +691,12 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
     public void RemoveModifierByName(string modifierName, out string message)
     {
-        if (ActiveModifiers.Count <= 0)
+        if (!ActiveModifiers.Any())
         {
             message = "No modifiers are active.";
             return;
         }
-
-
+        
         foreach (GameModifierBase? modifier in ActiveModifiers)
         {
             if (string.Equals(modifier.Name, modifierName, StringComparison.OrdinalIgnoreCase))
@@ -733,7 +732,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
     public void RemoveAllModifiers()
     {
-        if (ActiveModifiers.Count <= 0)
+        if (!ActiveModifiers.Any())
         {
             return;
         }
@@ -772,8 +771,8 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
         {
             return true;
         }
-
-        if (RegisteredModifiers.Count <= 0)
+        
+        if (!RegisteredModifiers.Any())
         {
             Console.WriteLine("[GameModifiers::AddRandomModifiers] No registered modifiers available!");
             return false;
@@ -800,7 +799,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             }
         }
 
-        if (possibleModifiersPool.Count <= 0)
+        if (!possibleModifiersPool.Any())
         {
             Console.WriteLine("[GameModifiers::AddRandomModifiers] Modifier pool is empty!");
             return false;
@@ -821,7 +820,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             possibleModifiersPool.RemoveAt(randomIndex);
         }
 
-        if (addedModifiers.Count <= 0)
+        if (!addedModifiers.Any())
         {
             return false;
         }
@@ -843,7 +842,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
     private void ActivateModifiers(List<GameModifierBase> modifiers)
     {
-        if (modifiers.Count <= 0)
+        if (!modifiers.Any())
         {
             return;
         }

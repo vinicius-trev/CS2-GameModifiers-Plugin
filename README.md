@@ -18,60 +18,62 @@ mind when reading through the code and if I have done something wrong pull reque
 
 ## 🔧 Modifiers
 
-| Name                | Description                                               | Done |
-|---------------------|-----------------------------------------------------------|------|
-| MoreDamage          | Damage dealt is doubled                                   |  ✔️  |
-| LessDamage          | Damage dealt is halved                                    |  ✔️  |
-| LongerFlashes       | Flash bang effect lasts 3 times longer                    |  ✔️  |
-| DodgyGrenades       | Timers on flashes and HE's are randomized                 |  ✔️  |
-| RainbowSmokes       | Smokes colors are randomized                              |  ✔️  |
-| Juggernaut          | Everyone's max health is set to 500                       |  ✔️  |
-| GlassCannon         | Everyone is 1 hit to kill                                 |  ✔️  |
-| RandomHealth        | Everyone's health is set to a random number               |  ✔️  |
-| Cloaked             | Everyone is invisible                                     |  ✔️  |
-| RandomCloak         | Everyone has a random chance to be invisible              |  ✔️  |
-| SingleCloak         | Each team has an invisible player                         |  ✔️  |
-| DropOnMiss          | Weapons are dropped on missed shots                       |  ✔️  |
-| DontMiss            | You take the damage from your missed shots                |  ✔️  |
-| TeamModelSwap       | Switches player models for both sides                     |  ✔️  |
-| WhosWho             | Random player models for both sides                       |  ✔️  |
-| Imposters           | A random player for each team has swapped sides           |  ✔️  |
-| SmallPlayers        | Everyone is 2X smaller                                    |  ✔️  |
-| SwapOnDeath         | Players will swap places on kill                          |  ✔️  |
-| SwapOnHit           | Players will swap places on hit                           |  ✔️  |
-| RandomSpawns        | Players spawn locations are randomized                    |  ✔️  |
-| TeleportOnReload    | Players are teleported to a random spot on reload         |  ✔️  |
-| TeleportOnHit       | Players are teleported to a random spot on hit            |  ✔️  |
-| ResetOnReload       | Players are teleported back to their spawn on reload      |  ✔️  |
-| ThirdPerson         | Everyone is in third person view                          |  ✔️  |
-| Vampire             | You steal the damage you deal                             |  ✔️  |
-| Lightweight         | Max movement speed is much faster                         |  ✔️  |
-| OnePerReload        | 1 bullet per reload                                       |  ✔️  |
-| OneInTheChamber     | 1 bullet per kill                                         |  ✔️  |
-| NoSpread            | Weapons have perfect aim                                  |  ✔️  |
-| FastFireRate        | Fire rate is 2 times faster                               |  ✔️  |
-| SlowFireRate        | Fire rate is 2 times slower                               |  ✔️  |
-| KnivesOnly          | Buy menu is disabled, knives only                         |  ✔️  |
-| RandomWeapon        | Buy menu is disabled, random weapon only                  |  ✔️  |
-| RandomWeapons       | Buy menu is disabled, random weapons are given out        |  ✔️  |
-| GrenadesOnly        | Buy menu is disabled, grenades only                       |  ✔️  |
-| Xray                | Everyone can see each other through walls                 |  ✔️  |
-| ZoomIn              | Everyone's FOV is set to 30                               |  ✔️  |
-| ZoomOut             | Everyone's FOV is set to 150                              |  ✔️  |
-| Bhop                | Auto-bhop enabled                                         |  ✔️  |
-| BiggerExplosions    | HE Grenades have much larger explosions                   |  ✔️  |
-| SuperJump           | Jumping is no 5 times higher                              |  ✔️  |
-| Respawn             | Respawns are enabled                                      |  ✔️  |
-| SlowMo              | Entire game is 2x slower                                  |  ✔️  |
-| PlantAnywhere       | Bomb can be planted anywhere                              |  ✔️  |
-| IncreasedSpread     | Your bullets go where they want now                       |  ✔️  |
-| LowGravity          | Gravity 4 times weaker                                    |  ✔️  |
-| LeadBoots           | Your wearing really heavy boots                           |  ✔️  |
-| HeadShotOnly        | Head shot damage only                                     |  ✔️  |
-| InfiniteAmmo        | All weapons have infinite ammo                            |  ✔️  |
-| Surf                | Will config vars for surfing                              |  ✔️  |
-| Speed               | Entire game is 2x faster                                  |  ✔️  |
-| HighGravity         | Gravity 4 times greater                                   |  ✔️  |
+| Name             | Description                                          | Done |
+|------------------|------------------------------------------------------|------|
+| MoreDamage       | Damage dealt is doubled                              |  ✔️  |
+| LessDamage       | Damage dealt is halved                               |  ✔️  |
+| LongerFlashes    | Flash bang effect lasts 3 times longer               |  ✔️  |
+| DodgyGrenades    | Timers on flashes and HE's are randomized            |  ✔️  |
+| RainbowSmokes    | Smokes colors are randomized                         |  ✔️  |
+| Juggernaut       | Everyone's max health is set to 500                  |  ✔️  |
+| GlassCannon      | Everyone is 1 hit to kill                            |  ✔️  |
+| RandomHealth     | Everyone's health is set to a random number          |  ✔️  |
+| Cloaked          | Everyone is invisible                                |  ✔️  |
+| RandomCloak      | Everyone has a random chance to be invisible         |  ✔️  |
+| SingleCloak      | Each team has an invisible player                    |  ✔️  |
+| DropOnMiss       | Weapons are dropped on missed shots                  |  ✔️  |
+| DontMiss         | You take the damage from your missed shots           |  ✔️  |
+| TeamModelSwap    | Switches player models for both sides                |  ✔️  |
+| WhosWho          | Random player models for both sides                  |  ✔️  |
+| Imposters        | A random player for each team has swapped sides      |  ✔️  |
+| SmallPlayers     | Everyone is 2X smaller                               |  ✔️  |
+| SwapOnDeath      | Players will swap places on kill                     |  ✔️  |
+| SwapOnHit        | Players will swap places on hit                      |  ✔️  |
+| RandomSpawns     | Players spawn locations are randomized               |  ✔️  |
+| TeleportOnReload | Players are teleported to a random spot on reload    |  ✔️  |
+| TeleportOnHit    | Players are teleported to a random spot on hit       |  ✔️  |
+| ResetOnReload    | Players are teleported back to their spawn on reload |  ✔️  |
+| ThirdPerson      | Everyone is in third person view                     |  ✔️  |
+| Vampire          | You steal the damage you deal                        |  ✔️  |
+| Lightweight      | Max movement speed is much faster                    |  ✔️  |
+| OnePerReload     | 1 bullet per reload                                  |  ✔️  |
+| OneInTheChamber  | 1 bullet per kill                                    |  ✔️  |
+| NoSpread         | Weapons have perfect aim                             |  ✔️  |
+| FastFireRate     | Fire rate is 2 times faster                          |  ✔️  |
+| SlowFireRate     | Fire rate is 2 times slower                          |  ✔️  |
+| KnivesOnly       | Buy menu is disabled, knives only                    |  ✔️  |
+| RandomWeapon     | Buy menu is disabled, random weapon only             |  ✔️  |
+| RandomWeapons    | Buy menu is disabled, random weapons are given out   |  ✔️  |
+| GrenadesOnly     | Buy menu is disabled, grenades only                  |  ✔️  |
+| Xray             | Everyone can see each other through walls            |  ✔️  |
+| RandomXray       | Some people can see each other through walls         |  ✔️  |
+| SoloXray         | One person on each team has walls                    |  ✔️  |
+| ZoomIn           | Everyone's FOV is set to 30                          |  ✔️  |
+| ZoomOut          | Everyone's FOV is set to 150                         |  ✔️  |
+| Bhop             | Auto-bhop enabled                                    |  ✔️  |
+| BiggerExplosions | HE Grenades have much larger explosions              |  ✔️  |
+| SuperJump        | Jumping is no 5 times higher                         |  ✔️  |
+| Respawn          | Respawns are enabled                                 |  ✔️  |
+| SlowMo           | Entire game is 2x slower                             |  ✔️  |
+| PlantAnywhere    | Bomb can be planted anywhere                         |  ✔️  |
+| IncreasedSpread  | Your bullets go where they want now                  |  ✔️  |
+| LowGravity       | Gravity 4 times weaker                               |  ✔️  |
+| LeadBoots        | Your wearing really heavy boots                      |  ✔️  |
+| HeadShotOnly     | Head shot damage only                                |  ✔️  |
+| InfiniteAmmo     | All weapons have infinite ammo                       |  ✔️  |
+| Surf             | Will config vars for surfing                         |  ✔️  |
+| Speed            | Entire game is 2x faster                             |  ✔️  |
+| HighGravity      | Gravity 4 times greater                              |  ✔️  |
 
 
 ## 📟 Commands

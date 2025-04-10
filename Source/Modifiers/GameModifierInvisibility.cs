@@ -1,17 +1,16 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace GameModifiers.Modifiers;
 
 public abstract class GameModifierInvisibleBase : GameModifierBase
 {
-    protected readonly List<int> CachedInvisiblePlayers = new();
+    protected readonly List<int> CachedHiddenPlayers = new();
 
     public override void Enabled()
     {
@@ -19,57 +18,54 @@ public abstract class GameModifierInvisibleBase : GameModifierBase
 
         if (Core != null)
         {
+            Core.RegisterListener<Listeners.CheckTransmit>(OnCheckTransmit);
             Core.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath, HookMode.Pre);
+            Core.RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            Core.RegisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
             Core.RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
         }
+
+        HidePlayers();
     }
 
     public override void Disabled()
     {
         if (Core != null)
         {
+            Core.RemoveListener<Listeners.CheckTransmit>(OnCheckTransmit);
             Core.DeregisterEventHandler<EventPlayerDeath>(OnPlayerDeath, HookMode.Pre);
+            Core.DeregisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
+            Core.DeregisterEventHandler<EventPlayerSpawned>(OnPlayerSpawned);
             Core.RemoveListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
         }
-
+        
+        CachedHiddenPlayers.Clear();
         base.Disabled();
     }
-
-    protected void SetPlayerInvisible(CCSPlayerController? player, bool invisible)
+    
+    protected virtual void HidePlayers()
     {
-        if (player == null || !player.IsValid)
+        Utilities.GetPlayers().ForEach(player =>
         {
-            return;
-        }
-
-        var playerPawn = player.PlayerPawn.Value;
-        if (playerPawn == null || !playerPawn.IsValid)
-        {
-            return;
-        }
-
-        if (invisible)
-        {
-            if (CachedInvisiblePlayers.Contains(player.Slot))
+            if (!CachedHiddenPlayers.Contains(player.Slot) && CheckHidePlayer(player))
             {
-                return;
+                CachedHiddenPlayers.Add(player.Slot);
             }
-
-            playerPawn.Render = Color.FromArgb(0, 255, 255, 255);
-            CachedInvisiblePlayers.Add(player.Slot);
-        }
-        else
+        });
+    }
+    
+    protected virtual bool CheckHidePlayer(CCSPlayerController player)
+    {
+        // Override in child class...
+        return false;
+    }
+    
+    protected virtual void UnHidePlayer(CCSPlayerController player)
+    {
+        if (CachedHiddenPlayers.Contains(player.Slot))
         {
-            if (!CachedInvisiblePlayers.Contains(player.Slot))
-            {
-                return;
-            }
-
-            playerPawn.Render = Color.FromArgb(255, 255, 255, 255);
-            CachedInvisiblePlayers.Remove(player.Slot);
+            CachedHiddenPlayers.Remove(player.Slot);
         }
-
-        Utilities.SetStateChanged(playerPawn, "CBaseModelEntity", "m_clrRender");
     }
 
     private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
@@ -80,8 +76,65 @@ public abstract class GameModifierInvisibleBase : GameModifierBase
             return HookResult.Continue;
         }
 
-        SetPlayerInvisible(player, false);
+        UnHidePlayer(player);
         return HookResult.Continue;
+    }
+    
+    private HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+        if (player == null || player.IsValid == false || player.Connected != PlayerConnectedState.PlayerConnected)
+        {
+            return HookResult.Continue;
+        }
+
+        if (!CachedHiddenPlayers.Contains(player.Slot) && CheckHidePlayer(player))
+        {
+            CachedHiddenPlayers.Add(player.Slot);
+        }
+        
+        return HookResult.Continue;
+    }
+
+    private HookResult OnPlayerSpawned(EventPlayerSpawned @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+        if (player == null || player.IsValid == false || player.Connected != PlayerConnectedState.PlayerConnected)
+        {
+            return HookResult.Continue;
+        }
+        
+        if (!CachedHiddenPlayers.Contains(player.Slot) && CheckHidePlayer(player))
+        {
+            CachedHiddenPlayers.Add(player.Slot);
+        }
+        
+        return HookResult.Continue;
+    }
+    
+    private void OnCheckTransmit(CCheckTransmitInfoList infoList)
+    {
+        List<CCSPlayerController> players = Utilities.GetPlayers();
+        if (!players.Any())
+        {
+            return;
+        }
+
+        foreach ((CCheckTransmitInfo info, CCSPlayerController? player) in infoList)
+        {
+            if (player == null || !player.IsValid)
+            {
+                continue;
+            }
+            
+            IEnumerable<CCSPlayerController> hiddenPlayers = players
+                .Where(p => p.IsValid && p.Pawn.IsValid && p.Slot != player.Slot && CachedHiddenPlayers.Contains(p.Slot));
+            
+            foreach (CCSPlayerController hiddenPlayer in hiddenPlayers)
+            {
+                info.TransmitEntities.Remove((int)hiddenPlayer.Pawn.Index);
+            }
+        }
     }
 
     private void OnClientDisconnect(int slot)
@@ -89,15 +142,15 @@ public abstract class GameModifierInvisibleBase : GameModifierBase
         CCSPlayerController? player = Utilities.GetPlayerFromSlot(slot);
         if (player == null || !player.IsValid)
         {
-            if (CachedInvisiblePlayers.Contains(slot))
+            if (CachedHiddenPlayers.Contains(slot))
             {
-                CachedInvisiblePlayers.Remove(slot);
+                CachedHiddenPlayers.Remove(slot);
             }
 
             return;
         }
-
-        SetPlayerInvisible(player, false);
+        
+        UnHidePlayer(player);
     }
 }
 
@@ -111,25 +164,10 @@ public class GameModifierCloaked : GameModifierInvisibleBase
         GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
         GameModifiersUtils.GetModifierName<GameModifierSingleCloak>()
     ];
-
-    public override void Enabled()
+    
+    protected override bool CheckHidePlayer(CCSPlayerController player)
     {
-        base.Enabled();
-
-        Utilities.GetPlayers().ForEach(player =>
-        {
-            SetPlayerInvisible(player, true);
-        });
-    }
-
-    public override void Disabled()
-    {
-        Utilities.GetPlayers().ForEach(player =>
-        {
-            SetPlayerInvisible(player, false);
-        });
-
-        base.Disabled();
+        return true;
     }
 }
 
@@ -143,29 +181,15 @@ public class GameModifierRandomCloak : GameModifierInvisibleBase
         GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
         GameModifiersUtils.GetModifierName<GameModifierSingleCloak>()
     ];
-
-    public override void Enabled()
+    
+    protected override bool CheckHidePlayer(CCSPlayerController player)
     {
-        base.Enabled();
-
-        Utilities.GetPlayers().ForEach(player =>
+        if (Random.Shared.Next(0, 2) == 0)
         {
-            if (Random.Shared.Next(0, 2) == 0)
-            {
-                SetPlayerInvisible(player, true);
-            }
-        });
-    }
-
-    public override void Disabled()
-    {
-        List<int> removeSlots = CachedInvisiblePlayers.ToList();
-        foreach (var playerSlot in removeSlots)
-        {
-            SetPlayerInvisible(Utilities.GetPlayerFromSlot(playerSlot), false);
+            return false;
         }
-
-        base.Disabled();
+        
+        return true;
     }
 }
 
@@ -179,32 +203,21 @@ public class GameModifierSingleCloak : GameModifierInvisibleBase
         GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
         GameModifiersUtils.GetModifierName<GameModifierRandomCloak>()
     ];
-
-    public override void Enabled()
+    
+    protected override void HidePlayers()
     {
-        base.Enabled();
-
+        CachedHiddenPlayers.Clear();
+        
         List<CCSPlayerController> terroristPlayers = GameModifiersUtils.GetTerroristPlayers();
-        if (terroristPlayers.Count > 0)
+        if (terroristPlayers.Any())
         {
-            SetPlayerInvisible(terroristPlayers[Random.Shared.Next(terroristPlayers.Count)], true);
+            CachedHiddenPlayers.Add(Random.Shared.Next(terroristPlayers.Count));
         }
 
         List<CCSPlayerController> counterTerroristPlayers = GameModifiersUtils.GetCounterTerroristPlayers();
-        if (counterTerroristPlayers.Count > 0)
+        if (counterTerroristPlayers.Any())
         {
-            SetPlayerInvisible(counterTerroristPlayers[Random.Shared.Next(counterTerroristPlayers.Count)], true);
+            CachedHiddenPlayers.Add(Random.Shared.Next(counterTerroristPlayers.Count));
         }
-    }
-
-    public override void Disabled()
-    {
-        List<int> removeSlots = CachedInvisiblePlayers.ToList();
-        foreach (var playerSlot in removeSlots)
-        {
-            SetPlayerInvisible(Utilities.GetPlayerFromSlot(playerSlot), false);
-        }
-
-        base.Disabled();
     }
 }

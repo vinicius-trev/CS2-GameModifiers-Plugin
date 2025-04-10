@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -194,19 +195,11 @@ public class GameModifierImposters : GameModifierModelSwap
         ApplyImposter(GameModifiersUtils.GetTerroristPlayers());
         ApplyImposter(GameModifiersUtils.GetCounterTerroristPlayers());
 
-        List<string> playerNames = Utilities.GetPlayers()
-            .Where(player => player.IsValid && (player.Team == CsTeam.CounterTerrorist || player.Team == CsTeam.Terrorist))
-            .Select(player => player.PlayerName)
-            .ToList();
-
         _cachedPlayerNames.Clear();
         Utilities.GetPlayers().ForEach(player =>
         {
             _cachedPlayerNames.Add(player.Slot, player.PlayerName);
-
-            int randomNameIdx = Random.Shared.Next(playerNames.Count);
-            player.PlayerName = playerNames[randomNameIdx];
-            playerNames.RemoveAt(randomNameIdx);
+            player.PlayerName = " ";
 
             Utilities.SetStateChanged(player, "CBasePlayerController", "m_iszPlayerName");
         });
@@ -231,7 +224,7 @@ public class GameModifierImposters : GameModifierModelSwap
 
     private void ApplyImposter(List<CCSPlayerController> players)
     {
-        if (players.Count <= 0)
+        if (!players.Any())
         {
             return;
         }

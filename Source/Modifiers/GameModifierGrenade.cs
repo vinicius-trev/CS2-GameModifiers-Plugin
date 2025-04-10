@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
@@ -47,7 +48,7 @@ public class GameModifierLongerFlashes : GameModifierBase
             return HookResult.Continue;
         }
 
-        @event.BlindDuration *= 3.0f;
+        @event.BlindDuration = 1.0f + Random.Shared.Next(1, 10);
         playerPawn.FlashDuration = @event.BlindDuration;
         Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_flFlashDuration");
 
