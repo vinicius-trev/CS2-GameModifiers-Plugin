@@ -19,19 +19,16 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
     public override string ModuleName => "Game Modifiers";
     public override string ModuleAuthor => "Shr00mDev";
     public override string ModuleDescription => "Apply game modifiers dynamically based of pre-defined classes or config files.";
-    public override string ModuleVersion => "1.0.2";
-
+    public override string ModuleVersion => "1.0.3";
     public GameModifiersConfig Config { get; set; } = new();
-
     public bool RandomRoundsEnabled { get; private set; } = false;
-
     private List<GameModifierBase> RegisteredModifiers { get; } = new();
     private List<GameModifierBase> ActiveModifiers { get; } = new();
     private List<GameModifierBase> LastActiveModifiers { get; set; } = new();
 
     private int _minRandomRounds = 1;
     private int _maxRandomRounds = 1;
-
+    
     public void OnConfigParsed(GameModifiersConfig config)
     {
         Config = config;
@@ -77,16 +74,23 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
 
             if (registeredModifierNames.Contains(modifier.Name))
             {
-                Console.WriteLine($"[GameModifiers::Load] WARNING: Found duplicate modifier name entry for {modifier.Name} all modifier names should be unique!");
+                Console.WriteLine($"[GameModifiers::Initialise] WARNING: Found duplicate modifier name entry for {modifier.Name} all modifier names should be unique!");
                 continue;
             }
 
             registeredModifierNames.Add(modifier.Name);
         }
-
+        
         if (Config.RandomRoundsEnabledByDefault)
         {
-            RandomRoundsEnabled = true;
+            if (RegisteredModifiers.Count <= 0)
+            {
+                Console.WriteLine("[GameModifiers::Initialise] WARNING: No modifiers are registered! Cannot activate random rounds by default!");
+            }
+            else
+            {
+                RandomRoundsEnabled = true;
+            }
         }
     }
 
@@ -329,15 +333,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             return;
         }
 
-        RandomRoundsEnabled = !RandomRoundsEnabled;
-
-        GameModifiersUtils.PrintTitleToChatAll(RandomRoundsEnabled ? "Random rounds enabled for next round!" : "Random rounds disabled!");
-        GameModifiersUtils.ShowMessageCentreAll($"Random Rounds {(RandomRoundsEnabled ? "Enabled" : "Disabled")}");
-
-        if (RandomRoundsEnabled == false)
-        {
-            RemoveAllModifiers();
-        }
+        ToggleRandomRounds();
     }
 
     // !MinRandomRounds - Set the min number of random round modifiers to be active each round.
@@ -444,7 +440,7 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
             ToggleModifierCommand(player, typeof(GameModifierXrayAll));
         }
     }
-    
+
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
@@ -455,9 +451,17 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
                 GameModifiersUtils.PrintTitleToChatAll("No registered modifiers found! Skipping random round...");
                 return HookResult.Continue;
             }
-
+            
             RemoveAllModifiers();
-            ApplyRandomRoundsForRound();
+            
+            if (Config.DisableRandomRoundsInWarmup && GameModifiersUtils.IsWarmupActive())
+            {
+                GameModifiersUtils.PrintTitleToChatAll("Random rounds will start after warmup period...");
+            }
+            else
+            {
+                ApplyRandomRoundsForRound();
+            }
         }
         else
         {
@@ -539,6 +543,18 @@ public class GameModifiersCore : BasePlugin, IPluginConfig<GameModifiersConfig>
         }
 
         return false;
+    }
+
+    public void ToggleRandomRounds()
+    {
+        RandomRoundsEnabled = !RandomRoundsEnabled;
+        if (RandomRoundsEnabled == false)
+        {
+            RemoveAllModifiers();
+        }
+        
+        GameModifiersUtils.PrintTitleToChatAll(RandomRoundsEnabled ? "Random rounds enabled for next round!" : "Random rounds disabled!");
+        GameModifiersUtils.ShowMessageCentreAll($"Random Rounds {(RandomRoundsEnabled ? "Enabled" : "Disabled")}");
     }
 
     public void ApplyRandomRoundsForRound()

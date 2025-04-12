@@ -253,13 +253,13 @@ public class GameModifierXraySingle : GameModifierXrayBase
         List<CCSPlayerController> terroristPlayers = GameModifiersUtils.GetTerroristPlayers();
         if (terroristPlayers.Any())
         {
-            CachedXrayEnabledPlayers.Add(Random.Shared.Next(terroristPlayers.Count));
+            CachedXrayEnabledPlayers.Add(terroristPlayers[Random.Shared.Next(terroristPlayers.Count)].Slot);
         }
 
         List<CCSPlayerController> counterTerroristPlayers = GameModifiersUtils.GetCounterTerroristPlayers();
         if (counterTerroristPlayers.Any())
         {
-            CachedXrayEnabledPlayers.Add(Random.Shared.Next(counterTerroristPlayers.Count));
+            CachedXrayEnabledPlayers.Add(counterTerroristPlayers[Random.Shared.Next(counterTerroristPlayers.Count)].Slot);
         }
     }
 }

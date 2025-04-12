@@ -98,7 +98,7 @@ internal static class GameModifiersUtils
 
         foreach (var modifier in modifiers)
         {
-            string description = withDescriptions ? $" - {ChatColors.Grey}[{modifier.Description}]" : "";
+            string description = withDescriptions ? $" - [{modifier.Description}]" : "";
             player.PrintToChat($"• {modifier.Name}{description}");
         }
     }
@@ -160,6 +160,34 @@ internal static class GameModifiersUtils
         }
 
         return moduleDirectory.FullName;
+    }
+    
+    public static object? TryGetGameRule(string rule)
+    {
+        CCSGameRulesProxy? gameRulesProxy = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").FirstOrDefault();
+        if (gameRulesProxy == null || gameRulesProxy.GameRules == null)
+        {
+            return null;
+        }
+        
+        var ruleProperty = gameRulesProxy.GameRules.GetType().GetProperty(rule);
+        if (ruleProperty != null && ruleProperty.CanRead)
+        {
+            return ruleProperty.GetValue(gameRulesProxy.GameRules);
+        }
+
+        return null;
+    }
+
+    public static bool IsWarmupActive()
+    {
+        var warmupPeriod = TryGetGameRule("WarmupPeriod");
+        if (warmupPeriod == null)
+        {
+            return false;
+        }
+
+        return (bool)warmupPeriod;
     }
 
     public static string GetModifierName<T>() where T : GameModifierBase, new()

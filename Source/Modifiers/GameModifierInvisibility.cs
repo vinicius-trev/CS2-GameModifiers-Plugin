@@ -211,13 +211,13 @@ public class GameModifierSingleCloak : GameModifierInvisibleBase
         List<CCSPlayerController> terroristPlayers = GameModifiersUtils.GetTerroristPlayers();
         if (terroristPlayers.Any())
         {
-            CachedHiddenPlayers.Add(Random.Shared.Next(terroristPlayers.Count));
+            CachedHiddenPlayers.Add(terroristPlayers[Random.Shared.Next(terroristPlayers.Count)].Slot);
         }
 
         List<CCSPlayerController> counterTerroristPlayers = GameModifiersUtils.GetCounterTerroristPlayers();
         if (counterTerroristPlayers.Any())
         {
-            CachedHiddenPlayers.Add(Random.Shared.Next(counterTerroristPlayers.Count));
+            CachedHiddenPlayers.Add(counterTerroristPlayers[Random.Shared.Next(counterTerroristPlayers.Count)].Slot);
         }
     }
 }

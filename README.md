@@ -131,6 +131,7 @@ It should look like this by default:
 | Config Variable              | Description                                                                                    |
 |------------------------------|------------------------------------------------------------------------------------------------|
 | RandomRoundsEnabledByDefault | Random rounds are enabled by default when the server starts                                    |
+| DisableRandomRoundsInWarmup  | Random rounds cannot be active in warmup                                                       |
 | ShowCentreMsg                | When random rounds is activated/deactivated a centre message will pop-up informing all players |
 | CanRepeat                    | Can modifiers repeat two rounds in a row during random rounds?                                 |
 | MinRandomRounds              | Minimum number of random modifiers to activate during random rounds                            |
