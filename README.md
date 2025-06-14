@@ -16,6 +16,13 @@ Inspiration for this came from NadeKings [video](https://www.youtube.com/watch?v
 Never made a plugin/mod for a game before so it's been a fun little side project in the evenings, keep this in 
 mind when reading through the code and if I have done something wrong pull requests would be much appreciated!
 
+## ⚠️ NOTICE
+
+I have discontinued work on this for now. It was originally made to have a few fun games with friends and I 
+am now working on other projects and don't have to the time to commit to updating and improving this plugin.
+
+I am happy for anyone to fork and continue work on the plugin :)
+
 ## 🔧 Modifiers
 
 | Name             | Description                                          | Done |
