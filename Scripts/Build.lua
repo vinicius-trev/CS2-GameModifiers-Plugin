@@ -9,7 +9,7 @@ project "GameModifiers"
     kind "SharedLib"
     language "C#"
     dotnetframework "net8.0"
-	nuget { "CounterStrikeSharp.API:1.0.316", "Dapper:2.0.78", "Microsoft.CSharp:4.7.0" }
+	nuget { "CounterStrikeSharp.API:1.0.339", "Dapper:2.1.66", "Microsoft.CSharp:4.7.0" }
     namespace "GameModifiers"
 	targetdir "../Binaries/%{cfg.buildcfg}"
 	location "../Build/GameModifiers"
