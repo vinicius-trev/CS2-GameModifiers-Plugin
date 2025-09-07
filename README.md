@@ -2,10 +2,6 @@
 
 # CS2-GameModifiers-Plugin
 
-![GitHub issues](https://img.shields.io/github/issues/Lewisscrivens/CS2-GameModifiers-Plugin)
-![GitHub dicussions](https://img.shields.io/github/discussions/Lewisscrivens/CS2-GameModifiers-Plugin)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Lewisscrivens/CS2-GameModifiers-Plugin)
-
 </div>
 
 A plugin I put together across a few days for personal use with some mates.
@@ -18,10 +14,9 @@ mind when reading through the code and if I have done something wrong pull reque
 
 ## ⚠️ NOTICE
 
-I have discontinued work on this for now. It was originally made to have a few fun games with friends and I 
-am now working on other projects and don't have to the time to commit to updating and improving this plugin.
+I am forking this project from [Lewisscrivens](https://github.com/Lewisscrivens/CS2-GameModifiers-Plugin) and trying to keep it updated as possible, after some testing I found some errors and will work on them in my spare time.
 
-I am happy for anyone to fork and continue work on the plugin :)
+As already said in this project, feel free to contribute
 
 ## 🔧 Modifiers
 
@@ -39,16 +34,16 @@ I am happy for anyone to fork and continue work on the plugin :)
 | RandomCloak      | Everyone has a random chance to be invisible         |  ✔️  |
 | SingleCloak      | Each team has an invisible player                    |  ✔️  |
 | DropOnMiss       | Weapons are dropped on missed shots                  |  ✔️  |
-| DontMiss         | You take the damage from your missed shots           |  ✔️  |
+| DontMiss         | You take the damage from your missed shots           |  ❌  |
 | TeamModelSwap    | Switches player models for both sides                |  ✔️  |
 | WhosWho          | Random player models for both sides                  |  ✔️  |
 | Imposters        | A random player for each team has swapped sides      |  ✔️  |
 | SmallPlayers     | Everyone is 2X smaller                               |  ✔️  |
 | SwapOnDeath      | Players will swap places on kill                     |  ✔️  |
 | SwapOnHit        | Players will swap places on hit                      |  ✔️  |
-| RandomSpawns     | Players spawn locations are randomized               |  ✔️  |
-| TeleportOnReload | Players are teleported to a random spot on reload    |  ✔️  |
-| TeleportOnHit    | Players are teleported to a random spot on hit       |  ✔️  |
+| RandomSpawns     | Players spawn locations are randomized               |  ❌  |
+| TeleportOnReload | Players are teleported to a random spot on reload    |  ❌  |
+| TeleportOnHit    | Players are teleported to a random spot on hit       |  ❌  |
 | ResetOnReload    | Players are teleported back to their spawn on reload |  ✔️  |
 | ThirdPerson      | Everyone is in third person view                     |  ✔️  |
 | Vampire          | You steal the damage you deal                        |  ✔️  |
@@ -56,12 +51,12 @@ I am happy for anyone to fork and continue work on the plugin :)
 | OnePerReload     | 1 bullet per reload                                  |  ✔️  |
 | OneInTheChamber  | 1 bullet per kill                                    |  ✔️  |
 | NoSpread         | Weapons have perfect aim                             |  ✔️  |
-| FastFireRate     | Fire rate is 2 times faster                          |  ✔️  |
-| SlowFireRate     | Fire rate is 2 times slower                          |  ✔️  |
-| KnivesOnly       | Buy menu is disabled, knives only                    |  ✔️  |
-| RandomWeapon     | Buy menu is disabled, random weapon only             |  ✔️  |
-| RandomWeapons    | Buy menu is disabled, random weapons are given out   |  ✔️  |
-| GrenadesOnly     | Buy menu is disabled, grenades only                  |  ✔️  |
+| FastFireRate     | Fire rate is 2 times faster                          |  ❌  |
+| SlowFireRate     | Fire rate is 2 times slower                          |  ❌  |
+| KnivesOnly       | Buy menu is disabled, knives only                    |  ❌  |
+| RandomWeapon     | Buy menu is disabled, random weapon only             |  ❌  |
+| RandomWeapons    | Buy menu is disabled, random weapons are given out   |  ❌  |
+| GrenadesOnly     | Buy menu is disabled, grenades only                  |  ❌  |
 | Xray             | Everyone can see each other through walls            |  ✔️  |
 | RandomXray       | Some people can see each other through walls         |  ✔️  |
 | SoloXray         | One person on each team has walls                    |  ✔️  |
@@ -70,7 +65,7 @@ I am happy for anyone to fork and continue work on the plugin :)
 | Bhop             | Auto-bhop enabled                                    |  ✔️  |
 | BiggerExplosions | HE Grenades have much larger explosions              |  ✔️  |
 | SuperJump        | Jumping is no 5 times higher                         |  ✔️  |
-| Respawn          | Respawns are enabled                                 |  ✔️  |
+| Respawn          | Respawns are enabled                                 |  ❌  |
 | SlowMo           | Entire game is 2x slower                             |  ✔️  |
 | PlantAnywhere    | Bomb can be planted anywhere                         |  ✔️  |
 | IncreasedSpread  | Your bullets go where they want now                  |  ✔️  |
